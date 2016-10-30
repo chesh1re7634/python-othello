@@ -64,7 +64,7 @@ class Node():
 
 def UCTSEARCH(budget, root):
     for iter in range(budget):
-        if iter % 100 == 0:
+        if iter % int(budget/5) == 0:
             print iter
         front = TREEPOLICY(root)
         reward = DEFAULTPOLICY(front.state)
@@ -88,12 +88,15 @@ def EXPAND(node):
     return node.children[-1]
 
 def BESTCHILD(node, scalar):
+    player = node.state.player
     bestscore = -10000
     bestchild = []
     for c in node.children:
         exploit = c.reward/c.visits
         explore = math.sqrt(math.log(2*node.visits)/float(c.visits))
         score = exploit + scalar*explore
+        if player == "WHITE":
+            score = -1.0 * score
         if score == bestscore:
             bestchild.append(c)
         if score > bestscore:
@@ -117,10 +120,12 @@ def BACKUP(node, reward):
 
 if __name__ == "__main__":
     current_node = Node(State())
+    level = 50
+    num_sims = 10000
 
-    current_node = UCTSEARCH(1000, current_node)
-
-    print current_node.state.__repr__()
+    for i in range(level):
+        current_node = UCTSEARCH(num_sims/(level+1), current_node)
+        print current_node.state.__repr__()
 
     #print current_node.__repr__()
 
